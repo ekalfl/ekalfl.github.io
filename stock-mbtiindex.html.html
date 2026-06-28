@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나는 어떤 주식 투자자? 💰</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+
+  :root {
+    --pink:    #ff6b9d;
+    --purple:  #a78bfa;
+    --blue:    #60a5fa;
+    --green:   #34d399;
+    --yellow:  #fbbf24;
+    --orange:  #fb923c;
+    --bg:      #fdf4ff;
+    --card:    #ffffff;
+    --text:    #1e1b4b;
+    --sub:     #6b7280;
+    --border:  #f3e8ff;
+    --shadow:  0 4px 24px rgba(167,139,250,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+  }
+
+  /* ── 공통 카드 ── */
+  .card {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 40px 36px;
+    max-width: 560px;
+    width: 100%;
+    box-shadow: var(--shadow);
+    border: 1.5px solid var(--border);
+    animation: fadeUp 0.4s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── 인트로 화면 ── */
+  .intro-emoji {
+    font-size: 64px;
+    text-align: center;
+    margin-bottom: 16px;
+    animation: bounce 1.6s infinite;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  .intro-title {
+    font-size: 26px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .intro-sub {
+    text-align: center;
+    color: var(--sub);
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+  .tag {
+    background: #f3e8ff;
+    color: var(--purple);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 13px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── 버튼 ── */
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(167,139,250,0.35);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* ── 진행 바 ── */
+  .progress-wrap {
+    max-width: 560px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--purple);
+    margin-bottom: 7px;
+  }
+  .progress-bar-bg {
+    height: 8px;
+    background: #ede9fe;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--purple));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── 질문 화면 ── */
+  .q-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+  .q-emoji {
+    font-size: 40px;
+    margin-bottom: 10px;
+    display: block;
+    text-align: center;
+  }
+  .q-text {
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.45;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 12px; }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    background: #faf5ff;
+    border: 2px solid #ede9fe;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    text-align: left;
+    transition: all 0.18s;
+    line-height: 1.5;
+  }
+  .option-btn:hover {
+    border-color: var(--purple);
+    background: #f3e8ff;
+    transform: translateX(4px);
+  }
+  .option-btn:active { transform: translateX(2px); }
+  .option-btn.selected {
+    border-color: var(--pink);
+    background: linear-gradient(135deg, #ffe4f0, #f3e8ff);
+    box-shadow: 0 2px 12px rgba(255,107,157,0.15);
+  }
+  .opt-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    width: 32px;
+    text-align: center;
+  }
+
+  /* ── 로딩 화면 ── */
+  .loading-wrap {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .loading-spinner {
+    display: inline-block;
+    width: 56px;
+    height: 56px;
+    border: 5px solid #ede9fe;
+    border-top-color: var(--purple);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-size: 15px;
+    color: var(--purple);
+    font-weight: 600;
+  }
+  .loading-sub { font-size: 13px; color: var(--sub); margin-top: 6px; }
+
+  /* ── 결과 화면 ── */
+  .result-badge {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .result-badge span {
+    font-size: 11px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: #fff;
+    padding: 5px 16px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .result-emoji { font-size: 72px; text-align: center; margin: 12px 0 6px; }
+  .result-type {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--purple);
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .result-title {
+    font-size: 24px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+  .result-ticker {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .ticker-chip {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1.5px solid;
+  }
+
+  .result-desc {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #374151;
+    background: #faf5ff;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--purple);
+  }
+
+  .result-reason-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sub);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .reason-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .reason-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.6;
+  }
+  .reason-item::before {
+    content: '✅';
+    flex-shrink: 0;
+    font-size: 14px;
+    margin-top: 1px;
+  }
+
+  .score-bar-section { margin: 20px 0; }
+  .score-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--sub);
+    margin-bottom: 5px;
+  }
+  .score-bar-bg {
+    height: 10px;
+    background: #f3f4f6;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 1s ease 0.3s;
+  }
+
+  .share-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .btn-retry {
+    flex: 1;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    border: 2px solid var(--purple);
+    background: transparent;
+    color: var(--purple);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-retry:hover { background: #f3e8ff; }
+
+  .btn-share {
+    flex: 1;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-share:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .divider {
+    height: 1px;
+    background: #ede9fe;
+    margin: 20px 0;
+  }
+
+  .hidden { display: none; }
+
+  /* ── 반응형 ── */
+  @media (max-width: 480px) {
+    .card { padding: 28px 20px; }
+    .intro-title { font-size: 22px; }
+    .q-text { font-size: 17px; }
+    .result-title { font-size: 21px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     화면 1: 인트로
+══════════════════════════════ -->
+<div id="screen-intro" class="card">
+  <div class="intro-emoji">📈</div>
+  <h1 class="intro-title">나는 어떤 주식 투자자?<br>나만의 종목 찾기 🔍</h1>
+  <p class="intro-sub">
+    6가지 질문으로 당신의 투자 성향을 분석하고<br>
+    딱 맞는 주식 유형을 추천해드립니다 💡<br>
+    솔직하게 답할수록 더 정확해요!
+  </p>
+  <div class="tag-row">
+    <span class="tag">⏱ 소요 1분</span>
+    <span class="tag">❓ 6문항</span>
+    <span class="tag">📊 5가지 유형</span>
+    <span class="tag">무료</span>
+  </div>
+  <button class="btn-primary" onclick="startTest()">테스트 시작하기 →</button>
+</div>
+
+<!-- ══════════════════════════════
+     화면 2: 진행 바 + 질문
+══════════════════════════════ -->
+<div id="screen-question" class="hidden" style="max-width:560px; width:100%;">
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="q-step">1 / 6</span>
+      <span id="q-pct">17%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill" style="width:17%"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="text-align:center">
+      <span class="q-label" id="q-label">Q1</span>
+    </div>
+    <span class="q-emoji" id="q-emoji">🤔</span>
+    <p class="q-text" id="q-text">질문이 여기 들어갑니다</p>
+    <div class="options" id="options-wrap"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     화면 3: 로딩
+══════════════════════════════ -->
+<div id="screen-loading" class="card hidden">
+  <div class="loading-wrap">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loading-msg">당신의 투자 성향 분석 중...</div>
+    <div class="loading-sub">잠시만 기다려주세요 🔍</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     화면 4: 결과
+══════════════════════════════ -->
+<div id="screen-result" class="card hidden">
+  <div class="result-badge"><span>🎉 분석 완료</span></div>
+  <div class="result-emoji" id="r-emoji">📦</div>
+  <div class="result-type" id="r-type">TYPE A</div>
+  <div class="result-title" id="r-title">결과 제목</div>
+  <div class="result-ticker" id="r-tickers"></div>
+
+  <div class="result-desc" id="r-desc"></div>
+
+  <div class="result-reason-title">✨ 이 유형이 추천된 이유</div>
+  <ul class="reason-list" id="r-reasons"></ul>
+
+  <div class="divider"></div>
+
+  <div class="score-bar-section" id="r-scores"></div>
+
+  <div class="share-row">
+    <button class="btn-retry" onclick="retryTest()">🔄 다시 하기</button>
+    <button class="btn-share" onclick="shareResult()">🔗 결과 공유</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   데이터 설계
+   ─────────────────────────────────────
+   5가지 성향 타입
+   STABLE  : 안정 대형주형 (삼성전자·SK하이닉스)
+   GROWTH  : 혁신 성장주형 (NVIDIA·테슬라)
+   INCOME  : 배당 인컴형   (리얼티인컴·KT&G)
+   DOMESTIC: 국내 플랫폼형 (카카오·네이버)
+   HEDGE   : 헤지 분산형   (금ETF·리츠)
+
+   각 선택지는 {STABLE, GROWTH, INCOME, DOMESTIC, HEDGE}에
+   점수를 부여. 최고 점수 타입이 결과가 됨.
+═══════════════════════════════════════ */
+
+const TYPES = ['STABLE','GROWTH','INCOME','DOMESTIC','HEDGE'];
+
+const questions = [
+  {
+    emoji: '💭',
+    text: '투자할 돈이 생겼을 때\n제일 먼저 드는 생각은?',
+    options: [
+      { icon: '🛡️', text: '원금만큼은 절대 잃으면 안 되지',
+        scores: { STABLE:3, INCOME:1 } },
+      { icon: '🚀', text: '좀 잃어도 괜찮아, 크게 벌어야지!',
+        scores: { GROWTH:3, DOMESTIC:1 } },
+      { icon: '💵', text: '매달 따박따박 배당이 들어오면 최고',
+        scores: { INCOME:3, STABLE:1 } },
+      { icon: '🎯', text: '요즘 핫한 거 뭔지 먼저 찾아봐야지',
+        scores: { DOMESTIC:2, GROWTH:2 } },
+    ]
+  },
+  {
+    emoji: '📉',
+    text: '내가 산 주식이 갑자기\n20% 폭락했다. 나는?',
+    options: [
+      { icon: '🏃', text: '손절하고 바로 나온다. 멘탈이 먼저야',
+        scores: { HEDGE:3, INCOME:1 } },
+      { icon: '🛒', text: '기회다! 더 산다 (물타기 고수)',
+        scores: { STABLE:2, GROWTH:2 } },
+      { icon: '🧘', text: '장기 보유 예정이니까 일단 기다린다',
+        scores: { INCOME:2, STABLE:2 } },
+      { icon: '😱', text: '잠 못 자고 매일 차트만 들여다본다',
+        scores: { HEDGE:2, DOMESTIC:2 } },
+    ]
+  },
+  {
+    emoji: '⏳',
+    text: '나의 투자 기간은\n대략 어느 정도?',
+    options: [
+      { icon: '⚡', text: '6개월~1년, 단타도 OK',
+        scores: { DOMESTIC:3, GROWTH:1 } },
+      { icon: '📅', text: '3~5년, 중기 성장을 노린다',
+        scores: { GROWTH:3, DOMESTIC:1 } },
+      { icon: '🌳', text: '10년 이상, 진짜 장기 투자자',
+        scores: { STABLE:2, INCOME:3 } },
+      { icon: '🔮', text: '그때그때 봐서 결정한다',
+        scores: { HEDGE:2, DOMESTIC:1 } },
+    ]
+  },
+  {
+    emoji: '🔭',
+    text: '가장 관심 있는 산업·분야는?',
+    options: [
+      { icon: '🤖', text: 'AI·반도체·빅테크',
+        scores: { GROWTH:4, STABLE:1 } },
+      { icon: '🏥', text: '바이오·헬스케어',
+        scores: { DOMESTIC:3, GROWTH:1 } },
+      { icon: '🏦', text: '금융·부동산·인프라',
+        scores: { INCOME:3, STABLE:2 } },
+      { icon: '📱', text: '플랫폼·이커머스·콘텐츠',
+        scores: { DOMESTIC:4 } },
+    ]
+  },
+  {
+    emoji: '💸',
+    text: '평소 돈을 쓰는 스타일은?',
+    options: [
+      { icon: '📒', text: '가계부 쓰고 계획적으로 저축 먼저',
+        scores: { STABLE:2, INCOME:2 } },
+      { icon: '🛍️', text: '트렌디한 거 보면 바로 구매한다',
+        scores: { DOMESTIC:2, GROWTH:1 } },
+      { icon: '🔍', text: '꼼꼼하게 비교하고 가성비 찾는다',
+        scores: { INCOME:2, HEDGE:2 } },
+      { icon: '🎁', text: '일단 사고 나중에 고민',
+        scores: { GROWTH:2, DOMESTIC:1 } },
+    ]
+  },
+  {
+    emoji: '👥',
+    text: '친구들 사이에서\n나는 어떤 타입?',
+    options: [
+      { icon: '🤝', text: '모두가 믿고 의지하는 든든한 존재',
+        scores: { STABLE:3, INCOME:1 } },
+      { icon: '💡', text: '새로운 걸 가장 먼저 알아오는 얼리어답터',
+        scores: { GROWTH:3, DOMESTIC:1 } },
+      { icon: '🧊', text: '감정에 안 흔들리는 현실주의자',
+        scores: { INCOME:2, HEDGE:2 } },
+      { icon: '🎉', text: '분위기 주도하는 즉흥적 에너지',
+        scores: { DOMESTIC:2, HEDGE:1 } },
+    ]
+  },
+];
+
+const results = {
+  STABLE: {
+    emoji: '🏰',
+    type: 'TYPE — 안정 대형주형',
+    title: '삼성전자·SK하이닉스처럼\n든든하게 버티는 투자자',
+    tickers: [
+      { label: '삼성전자', color: '#3b82f6' },
+      { label: 'SK하이닉스', color: '#6366f1' },
+      { label: 'KODEX200', color: '#8b5cf6' },
+    ],
+    desc: '당신은 손실보다 안정을 중시하는 가치투자형입니다. 시장이 흔들려도 국내외 검증된 대형 우량주를 꾸준히 보유해 복리의 힘을 극대화하는 스타일이에요. 단기 등락에 동요하지 않는 강한 멘탈이 가장 큰 무기입니다! 💪',
+    reasons: [
+      '원금 보호를 중시하는 안정적 성향이 강하게 나타났어요',
+      '장기 보유 의지가 뚜렷해 대형주의 복리 효과를 극대화할 수 있어요',
+      '폭락 시 추가 매수를 고려하는 역발상 투자가 가능한 심리 구조예요',
+    ],
+  },
+  GROWTH: {
+    emoji: '🚀',
+    type: 'TYPE — 혁신 성장주형',
+    title: 'NVIDIA·테슬라처럼\n미래에 베팅하는 투자자',
+    tickers: [
+      { label: 'NVIDIA', color: '#10b981' },
+      { label: '테슬라', color: '#f59e0b' },
+      { label: 'ARKK ETF', color: '#ef4444' },
+    ],
+    desc: '당신은 트렌드를 읽고 미래 먹거리에 선제 투자하는 성장형 투자자입니다. AI·빅테크·신재생에너지처럼 산업 패러다임을 바꾸는 기업을 선호해요. 단기 변동성은 있지만 장기적으로 폭발적인 수익을 추구합니다! ⚡',
+    reasons: [
+      'AI·반도체 등 혁신 분야에 대한 강한 관심이 확인됐어요',
+      '단기 손실을 감수하고 큰 수익을 노리는 성향이 나타났어요',
+      '얼리어답터 기질로 새로운 트렌드를 빠르게 포착하는 능력이 있어요',
+    ],
+  },
+  INCOME: {
+    emoji: '💎',
+    type: 'TYPE — 배당 인컴형',
+    title: '매달 따박따박 들어오는\n배당 귀족주 투자자',
+    tickers: [
+      { label: 'KT&G', color: '#8b5cf6' },
+      { label: '리얼티인컴', color: '#06b6d4' },
+      { label: 'SCHD ETF', color: '#10b981' },
+    ],
+    desc: '당신은 주가 상승보다 안정적인 현금 흐름을 원하는 인컴 투자자입니다. 배당금이 꼬박꼬박 들어오는 걸 좋아하고, 계획적인 자산 관리에 능해요. 시간이 지날수록 배당 재투자 복리 효과가 빛을 발하는 스타일이에요! 🌱',
+    reasons: [
+      '현금 흐름과 안정적 수익을 최우선으로 생각하는 성향이 강해요',
+      '감정보다 계획을 따르는 규율 있는 투자 스타일이 확인됐어요',
+      '장기 보유 의지가 높아 배당 재투자 복리 전략과 최적으로 맞아요',
+    ],
+  },
+  DOMESTIC: {
+    emoji: '🌸',
+    type: 'TYPE — 국내 성장주형',
+    title: '카카오·네이버처럼\n국내 트렌드 선도 투자자',
+    tickers: [
+      { label: '카카오', color: '#f59e0b' },
+      { label: '네이버', color: '#10b981' },
+      { label: '크래프톤', color: '#6366f1' },
+    ],
+    desc: '당신은 국내 플랫폼·콘텐츠·게임 같이 일상에서 직접 느끼는 트렌드에 투자하는 스타일입니다. 직접 써보고 확신이 생기면 과감하게 베팅하는 경험 기반 투자자예요. 빠르게 변하는 국내 시장의 흐름을 읽는 감각이 무기! 📡',
+    reasons: [
+      '주변 트렌드와 일상에서 투자 아이디어를 얻는 성향이 강해요',
+      '단기~중기 수익을 추구하며 빠른 시장 대응이 가능한 스타일이에요',
+      '국내 산업 생태계에 대한 이해도가 높아 기업 분석에 유리해요',
+    ],
+  },
+  HEDGE: {
+    emoji: '🛡️',
+    type: 'TYPE — 헤지 분산형',
+    title: '금ETF·리츠처럼\n위기에 강한 분산 투자자',
+    tickers: [
+      { label: '금 ETF', color: '#f59e0b' },
+      { label: 'TIGER 리츠', color: '#ef4444' },
+      { label: '달러 MMF', color: '#3b82f6' },
+    ],
+    desc: '당신은 한 바구니에 모든 달걀을 담지 않는 분산투자의 달인입니다. 수익률보다 자산 보존과 위험 관리를 먼저 생각해요. 주식·채권·대안자산을 균형 있게 섞어 어떤 시장 환경에서도 손실을 최소화하는 현명한 투자자예요! 🔰',
+    reasons: [
+      '손실 회피 성향이 강하고 위험 관리를 최우선으로 생각해요',
+      '감정적 의사결정보다 포트폴리오 균형을 중시하는 합리적 스타일이에요',
+      '다양한 자산에 분산 투자해 어떤 시장에서도 안정적으로 수익을 추구해요',
+    ],
+  },
+};
+
+/* ── 상태 ── */
+let currentQ = 0;
+let scores = { STABLE:0, GROWTH:0, INCOME:0, DOMESTIC:0, HEDGE:0 };
+let answers = [];
+
+/* ── 화면 전환 ── */
+function show(id) {
+  ['screen-intro','screen-question','screen-loading','screen-result']
+    .forEach(s => document.getElementById(s).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── 테스트 시작 ── */
+function startTest() {
+  currentQ = 0;
+  scores = { STABLE:0, GROWTH:0, INCOME:0, DOMESTIC:0, HEDGE:0 };
+  answers = [];
+  show('screen-question');
+  renderQuestion();
+}
+
+/* ── 질문 렌더링 ── */
+function renderQuestion() {
+  const q = questions[currentQ];
+  const total = questions.length;
+  const pct = Math.round(((currentQ + 1) / total) * 100);
+
+  document.getElementById('q-step').textContent = `${currentQ + 1} / ${total}`;
+  document.getElementById('q-pct').textContent = `${pct}%`;
+  document.getElementById('progress-fill').style.width = `${pct}%`;
+  document.getElementById('q-label').textContent = `Q${currentQ + 1}`;
+  document.getElementById('q-emoji').textContent = q.emoji;
+  document.getElementById('q-text').textContent = q.text;
+
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="opt-icon">${opt.icon}</span><span>${opt.text}</span>`;
+    btn.onclick = () => selectOption(idx, opt.scores);
+    wrap.appendChild(btn);
+  });
+}
+
+/* ── 선택지 클릭 ── */
+function selectOption(idx, scoreMap) {
+  // 선택 표시
+  document.querySelectorAll('.option-btn').forEach((b, i) => {
+    b.classList.toggle('selected', i === idx);
+    b.disabled = true;
+  });
+
+  // 점수 누적
+  for (const [type, val] of Object.entries(scoreMap)) {
+    scores[type] = (scores[type] || 0) + val;
+  }
+  answers.push(idx);
+
+  // 다음 질문으로
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < questions.length) {
+      renderQuestion();
+    } else {
+      showLoading();
+    }
+  }, 420);
+}
+
+/* ── 로딩 ── */
+const loadingMsgs = [
+  '답변 데이터 수집 중... 📊',
+  '투자 성향 패턴 분석 중... 🔍',
+  '딱 맞는 종목 매칭 중... 💹',
+  '결과 리포트 생성 중... ✨',
+];
+
+function showLoading() {
+  show('screen-loading');
+  let i = 0;
+  const el = document.getElementById('loading-msg');
+  const iv = setInterval(() => {
+    el.textContent = loadingMsgs[i % loadingMsgs.length];
+    i++;
+    if (i >= loadingMsgs.length) {
+      clearInterval(iv);
+      setTimeout(showResult, 600);
+    }
+  }, 600);
+}
+
+/* ── 결과 계산 ── */
+function calcResult() {
+  return TYPES.reduce((a, b) => scores[a] >= scores[b] ? a : b);
+}
+
+/* ── 결과 렌더링 ── */
+function showResult() {
+  const type = calcResult();
+  const r = results[type];
+
+  document.getElementById('r-emoji').textContent = r.emoji;
+  document.getElementById('r-type').textContent = r.type;
+  document.getElementById('r-title').textContent = r.title;
+
+  // 티커 칩
+  const tickerEl = document.getElementById('r-tickers');
+  tickerEl.innerHTML = r.tickers.map(t =>
+    `<span class="ticker-chip" style="color:${t.color}; border-color:${t.color}; background:${t.color}18">${t.label}</span>`
+  ).join('');
+
+  document.getElementById('r-desc').textContent = r.desc;
+
+  // 추천 이유
+  document.getElementById('r-reasons').innerHTML = r.reasons.map(re =>
+    `<li class="reason-item">${re}</li>`
+  ).join('');
+
+  // 점수 바
+  const maxScore = Math.max(...Object.values(scores)) || 1;
+  const typeLabels = { STABLE:'안정형', GROWTH:'성장형', INCOME:'인컴형', DOMESTIC:'국내형', HEDGE:'헤지형' };
+  const typeColors = { STABLE:'#60a5fa', GROWTH:'#34d399', INCOME:'#a78bfa', DOMESTIC:'#fbbf24', HEDGE:'#f87171' };
+
+  const scoreSection = document.getElementById('r-scores');
+  scoreSection.innerHTML = '<div style="font-size:13px; font-weight:700; color:#6b7280; margin-bottom:12px">📊 나의 투자 성향 점수</div>' +
+    TYPES.map(t => {
+      const pct = Math.round((scores[t] / maxScore) * 100);
+      return `
+        <div class="score-label">
+          <span>${typeLabels[t]}</span>
+          <span>${scores[t]}점</span>
+        </div>
+        <div class="score-bar-bg">
+          <div class="score-bar-fill" data-w="${pct}" style="width:0%; background:${typeColors[t]}"></div>
+        </div>`;
+    }).join('');
+
+  show('screen-result');
+
+  // 바 애니메이션
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.score-bar-fill').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  });
+}
+
+/* ── 다시 하기 ── */
+function retryTest() {
+  show('screen-intro');
+}
+
+/* ── 공유 ── */
+function shareResult() {
+  const type = calcResult();
+  const r = results[type];
+  const text = `나는 ${r.title.replace(/\n/,' ')} 🎯\n추천 종목: ${r.tickers.map(t=>t.label).join(', ')}\n\n내 주식 투자 성향 테스트 결과!`;
+
+  if (navigator.share) {
+    navigator.share({ title: '나는 어떤 주식 투자자?', text }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => alert('📋 결과가 클립보드에 복사됐어요!'));
+  } else {
+    alert(text);
+  }
+}
+</script>
+</body>
+</html>
